@@ -17,8 +17,6 @@ export class GenerateSetsComponent implements OnInit {
   numberOfSets = 3;
   startTime = '';
   endTime = '';
-  draftStartTime = '';
-  draftEndTime = '';
   successMessage = '';
   errorMessage = '';
   isLoading = false;
@@ -34,13 +32,11 @@ export class GenerateSetsComponent implements OnInit {
         if (examId) this.selectedExamId = +examId;
       }
     });
-    // Pre-fill with sensible defaults: starts now, ends in 2 hours
-    const now = new Date();
-    const later = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-    this.startTime = this.toLocalDatetimeString(now);
+    // Pre-fill with sensible defaults: starts in 1 minute, ends in 2 hours after start
+    const start = new Date(Date.now() + 60 * 1000);
+    const later = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+    this.startTime = this.toLocalDatetimeString(start);
     this.endTime = this.toLocalDatetimeString(later);
-    this.draftStartTime = this.startTime;
-    this.draftEndTime = this.endTime;
   }
 
   toLocalDatetimeString(d: Date): string {
@@ -55,12 +51,7 @@ export class GenerateSetsComponent implements OnInit {
     }
 
     if (!this.startTime || !this.endTime) {
-      this.errorMessage = 'Please set both start and end time and click OK for each.';
-      return;
-    }
-
-    if (this.hasPendingValidityChanges) {
-      this.errorMessage = 'You have unapplied validity changes. Click OK for Start and End time before publishing.';
+      this.errorMessage = 'Please set both start and end time.';
       return;
     }
 
@@ -88,19 +79,5 @@ export class GenerateSetsComponent implements OnInit {
 
   onFieldChange(): void {
     this.errorMessage = '';
-  }
-
-  applyStartTime(): void {
-    this.startTime = this.draftStartTime;
-    this.errorMessage = '';
-  }
-
-  applyEndTime(): void {
-    this.endTime = this.draftEndTime;
-    this.errorMessage = '';
-  }
-
-  get hasPendingValidityChanges(): boolean {
-    return this.draftStartTime !== this.startTime || this.draftEndTime !== this.endTime;
   }
 }
