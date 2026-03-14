@@ -17,6 +17,8 @@ export class GenerateSetsComponent implements OnInit {
   numberOfSets = 3;
   startTime = '';
   endTime = '';
+  draftStartTime = '';
+  draftEndTime = '';
   successMessage = '';
   errorMessage = '';
   isLoading = false;
@@ -37,6 +39,8 @@ export class GenerateSetsComponent implements OnInit {
     const later = new Date(now.getTime() + 2 * 60 * 60 * 1000);
     this.startTime = this.toLocalDatetimeString(now);
     this.endTime = this.toLocalDatetimeString(later);
+    this.draftStartTime = this.startTime;
+    this.draftEndTime = this.endTime;
   }
 
   toLocalDatetimeString(d: Date): string {
@@ -47,6 +51,16 @@ export class GenerateSetsComponent implements OnInit {
   onSubmit(): void {
     if (!this.selectedExamId) {
       this.errorMessage = 'Please select an exam first.';
+      return;
+    }
+
+    if (!this.startTime || !this.endTime) {
+      this.errorMessage = 'Please set both start and end time and click OK for each.';
+      return;
+    }
+
+    if (this.hasPendingValidityChanges) {
+      this.errorMessage = 'You have unapplied validity changes. Click OK for Start and End time before publishing.';
       return;
     }
 
@@ -74,5 +88,19 @@ export class GenerateSetsComponent implements OnInit {
 
   onFieldChange(): void {
     this.errorMessage = '';
+  }
+
+  applyStartTime(): void {
+    this.startTime = this.draftStartTime;
+    this.errorMessage = '';
+  }
+
+  applyEndTime(): void {
+    this.endTime = this.draftEndTime;
+    this.errorMessage = '';
+  }
+
+  get hasPendingValidityChanges(): boolean {
+    return this.draftStartTime !== this.startTime || this.draftEndTime !== this.endTime;
   }
 }

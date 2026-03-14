@@ -1312,6 +1312,32 @@ select.form-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
   min-width: 0;
 }
 
+.datetime-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datetime-action-row .datetime-input {
+  flex: 1;
+}
+
+.btn-datetime-ok {
+  height: 40px;
+  min-width: 58px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.btn-datetime-ok:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
 .datetime-input::-webkit-datetime-edit,
 .datetime-input::-webkit-datetime-edit-fields-wrapper,
 .datetime-input::-webkit-datetime-edit-text,

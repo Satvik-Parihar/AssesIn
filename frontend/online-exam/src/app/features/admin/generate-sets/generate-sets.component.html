@@ -39,15 +39,22 @@
           <div class="form-row-2">
             <div class="form-group">
               <label class="form-label">Start Date &amp; Time</label>
-              <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" name="startTime" required />
+              <div class="datetime-action-row">
+                <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="draftStartTime" (ngModelChange)="onFieldChange()" name="startTime" required />
+                <button type="button" class="btn-secondary btn-datetime-ok" (click)="applyStartTime()">OK</button>
+              </div>
               <p class="helper-text">Choose the exact start window (local time).</p>
             </div>
             <div class="form-group">
               <label class="form-label">End Date &amp; Time</label>
-              <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" name="endTime" required />
+              <div class="datetime-action-row">
+                <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="draftEndTime" (ngModelChange)="onFieldChange()" name="endTime" required />
+                <button type="button" class="btn-secondary btn-datetime-ok" (click)="applyEndTime()">OK</button>
+              </div>
               <p class="helper-text">Set a closing time after the start.</p>
             </div>
           </div>
+          <p *ngIf="hasPendingValidityChanges" class="field-error mt-16">You have unapplied datetime changes. Click OK to confirm them.</p>
         </div>
 
         <div class="info-box mt-16">
