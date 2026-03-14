@@ -14,6 +14,7 @@ export class ExamComponent implements OnInit, OnDestroy {
   examData: StartExamResponse | null = null;
   currentIndex = 0;
   answers: Map<number, string | null> = new Map();
+  skippedQuestions: Set<number> = new Set();
   timeRemaining = 0;
   allowedUntilMs = 0;
   timerInterval: any = null;
@@ -56,6 +57,14 @@ export class ExamComponent implements OnInit, OnDestroy {
     return Array.from(this.answers.values()).filter(v => v !== null).length;
   }
 
+  get skippedCount(): number {
+    return this.skippedQuestions.size;
+  }
+
+  get remainingCount(): number {
+    return this.totalQuestions - this.answeredCount - this.skippedCount;
+  }
+
   get formattedTime(): string {
     const m = Math.floor(this.timeRemaining / 60).toString().padStart(2, '0');
     const s = (this.timeRemaining % 60).toString().padStart(2, '0');
@@ -85,10 +94,15 @@ export class ExamComponent implements OnInit, OnDestroy {
     return !!this.answers.get(qId);
   }
 
+  isSkipped(qId: number): boolean {
+    return this.skippedQuestions.has(qId);
+  }
+
   selectOption(option: string): void {
     if (!this.canInteract) return;
     if (!this.currentQuestion) return;
     this.answers.set(this.currentQuestion.id, option);
+    this.skippedQuestions.delete(this.currentQuestion.id);
   }
 
   goTo(index: number): void {
@@ -100,6 +114,18 @@ export class ExamComponent implements OnInit, OnDestroy {
 
   next(): void { this.goTo(this.currentIndex + 1); }
   prev(): void { this.goTo(this.currentIndex - 1); }
+
+  skipCurrentQuestion(): void {
+    if (!this.canInteract) return;
+    if (!this.currentQuestion) return;
+    if (!this.isAnswered(this.currentQuestion.id)) {
+      this.skippedQuestions.add(this.currentQuestion.id);
+    }
+
+    if (this.currentIndex < this.totalQuestions - 1) {
+      this.next();
+    }
+  }
 
   submitExam(): void {
     if (!this.canInteract) return;

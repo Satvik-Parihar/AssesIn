@@ -17,11 +17,10 @@
 
         <div class="form-group">
           <label class="form-label">Select Exam</label>
-          <select class="form-input" [(ngModel)]="selectedExamId" (change)="onExamChange(); onFieldChange()" (focus)="setActiveField('selectedExamId')" (blur)="clearActiveField('selectedExamId')" name="examSelect">
+          <select class="form-input" [(ngModel)]="selectedExamId" (change)="onExamChange(); onFieldChange()" name="examSelect">
             <option [value]="null" disabled>-- Choose an exam --</option>
             <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }} ({{ exam.subject }})</option>
           </select>
-          <p *ngIf="activeField === 'selectedExamId' && examError" class="field-error">{{ examError }}</p>
           <p *ngIf="exams.length === 0" class="field-hint">
             No exams found. <a routerLink="/admin/create-exam" class="auth-link">Create an exam first →</a>
           </p>
@@ -32,10 +31,7 @@
             <label class="form-label">Question Text</label>
             <textarea class="form-input form-textarea" [(ngModel)]="questionText" name="questionText"
               (ngModelChange)="onFieldChange()"
-              (focus)="setActiveField('questionText')"
-              (blur)="clearActiveField('questionText')"
               placeholder="Enter the question..." rows="3" required></textarea>
-            <p *ngIf="activeField === 'questionText' && questionTextError" class="field-error">{{ questionTextError }}</p>
           </div>
 
           <div class="form-group">
@@ -45,43 +41,37 @@
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="option-badge-editor opt-a">A</span>
-              <input type="text" class="form-input" [(ngModel)]="optionA" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionA')" (blur)="clearActiveField('optionA')" name="optionA" placeholder="Enter option A" required />
+              <input type="text" class="form-input" [(ngModel)]="optionA" (ngModelChange)="onFieldChange()" name="optionA" placeholder="Enter option A" required />
             </div>
-            <p *ngIf="activeField === 'optionA' && optionAError" class="field-error">{{ optionAError }}</p>
             <div class="option-editor-row" [class.is-correct]="correctOption === 'B'">
               <button type="button" class="option-check-btn" [class.active]="correctOption === 'B'" (click)="correctOption = 'B'; onFieldChange()" title="Mark B as correct">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="option-badge-editor opt-b">B</span>
-              <input type="text" class="form-input" [(ngModel)]="optionB" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionB')" (blur)="clearActiveField('optionB')" name="optionB" placeholder="Enter option B" required />
+              <input type="text" class="form-input" [(ngModel)]="optionB" (ngModelChange)="onFieldChange()" name="optionB" placeholder="Enter option B" required />
             </div>
-            <p *ngIf="activeField === 'optionB' && optionBError" class="field-error">{{ optionBError }}</p>
             <div class="option-editor-row" [class.is-correct]="correctOption === 'C'">
               <button type="button" class="option-check-btn" [class.active]="correctOption === 'C'" (click)="correctOption = 'C'; onFieldChange()" title="Mark C as correct">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="option-badge-editor opt-c">C</span>
-              <input type="text" class="form-input" [(ngModel)]="optionC" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionC')" (blur)="clearActiveField('optionC')" name="optionC" placeholder="Enter option C" required />
+              <input type="text" class="form-input" [(ngModel)]="optionC" (ngModelChange)="onFieldChange()" name="optionC" placeholder="Enter option C" required />
             </div>
-            <p *ngIf="activeField === 'optionC' && optionCError" class="field-error">{{ optionCError }}</p>
             <div class="option-editor-row" [class.is-correct]="correctOption === 'D'">
               <button type="button" class="option-check-btn" [class.active]="correctOption === 'D'" (click)="correctOption = 'D'; onFieldChange()" title="Mark D as correct">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="option-badge-editor opt-d">D</span>
-              <input type="text" class="form-input" [(ngModel)]="optionD" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionD')" (blur)="clearActiveField('optionD')" name="optionD" placeholder="Enter option D" required />
+              <input type="text" class="form-input" [(ngModel)]="optionD" (ngModelChange)="onFieldChange()" name="optionD" placeholder="Enter option D" required />
             </div>
-            <p *ngIf="activeField === 'optionD' && optionDError" class="field-error">{{ optionDError }}</p>
-            <p *ngIf="optionFieldsActive && optionsDistinctError" class="field-error">{{ optionsDistinctError }}</p>
           </div>
 
           <div class="form-group marks-group">
             <label class="form-label">Marks for this question</label>
-            <input type="number" class="form-input marks-input" [(ngModel)]="marks" (ngModelChange)="onFieldChange()" (focus)="setActiveField('marks')" (blur)="clearActiveField('marks')" name="marks" min="1" />
-            <p *ngIf="activeField === 'marks' && marksError" class="field-error">{{ marksError }}</p>
+            <input type="number" class="form-input marks-input" [(ngModel)]="marks" (ngModelChange)="onFieldChange()" name="marks" min="1" />
           </div>
 
-          <button type="submit" class="btn-submit" [disabled]="isLoading || !isFormValid">
+          <button type="submit" class="btn-submit" [disabled]="isLoading">
             <span *ngIf="isLoading" class="spinner"></span>
             {{ isLoading ? 'Adding...' : '+ Add Question' }}
           </button>

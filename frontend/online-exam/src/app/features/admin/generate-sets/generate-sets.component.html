@@ -14,18 +14,16 @@
       <form (ngSubmit)="onSubmit()" novalidate>
         <div class="form-group">
           <label class="form-label" for="examSelect">Select Exam</label>
-          <select id="examSelect" class="form-input" [(ngModel)]="selectedExamId" (ngModelChange)="onFieldChange()" (focus)="setActiveField('selectedExamId')" (blur)="clearActiveField('selectedExamId')" name="examSelect">
+          <select id="examSelect" class="form-input" [(ngModel)]="selectedExamId" (ngModelChange)="onFieldChange()" name="examSelect">
             <option [value]="null" disabled>-- Choose an exam --</option>
             <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }} ({{ exam.subject }})</option>
           </select>
-          <p *ngIf="activeField === 'selectedExamId' && examError" class="field-error">{{ examError }}</p>
           <p *ngIf="exams.length === 0" class="field-error">No exams available. <a routerLink="/admin/create-exam" class="auth-link">Create an exam first</a></p>
         </div>
 
         <div class="form-group">
           <label class="form-label">Number of Sets (1–5)</label>
-          <input type="range" class="form-range" [(ngModel)]="numberOfSets" (ngModelChange)="onFieldChange()" (focus)="setActiveField('numberOfSets')" (blur)="clearActiveField('numberOfSets')" name="numSets" min="1" max="5" />
-          <p *ngIf="activeField === 'numberOfSets' && numberOfSetsError" class="field-error">{{ numberOfSetsError }}</p>
+          <input type="range" class="form-range" [(ngModel)]="numberOfSets" (ngModelChange)="onFieldChange()" name="numSets" min="1" max="5" />
           <div class="sets-preview">
             <span *ngFor="let name of setNames.slice(0, numberOfSets)" class="set-badge">{{ name }}</span>
           </div>
@@ -41,13 +39,11 @@
           <div class="form-row-2">
             <div class="form-group">
               <label class="form-label">Start Date &amp; Time</label>
-              <input type="datetime-local" class="form-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" (focus)="setActiveField('startTime')" (blur)="clearActiveField('startTime')" name="startTime" required />
-              <p *ngIf="activeField === 'startTime' && startTimeError" class="field-error">{{ startTimeError }}</p>
+              <input type="datetime-local" class="form-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" name="startTime" required />
             </div>
             <div class="form-group">
               <label class="form-label">End Date &amp; Time</label>
-              <input type="datetime-local" class="form-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" (focus)="setActiveField('endTime')" (blur)="clearActiveField('endTime')" name="endTime" required />
-              <p *ngIf="activeField === 'endTime' && endTimeError" class="field-error">{{ endTimeError }}</p>
+              <input type="datetime-local" class="form-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" name="endTime" required />
             </div>
           </div>
         </div>
@@ -59,7 +55,7 @@
           <p>Sets are regenerated each time. Previous sets for this exam will be replaced. The exam will be immediately published after generation.</p>
         </div>
 
-        <button type="submit" class="btn-submit" [disabled]="isLoading || !isFormValid">
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
           <span *ngIf="isLoading" class="spinner"></span>
           {{ isLoading ? 'Generating...' : 'Generate Sets' }}
         </button>

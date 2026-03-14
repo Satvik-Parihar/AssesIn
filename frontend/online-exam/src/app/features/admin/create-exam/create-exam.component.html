@@ -24,20 +24,14 @@
           <label class="form-label" for="title">Exam Title</label>
           <input type="text" id="title" class="form-input" [(ngModel)]="title" name="title"
             (ngModelChange)="onFieldChange()"
-            (focus)="setActiveField('title')"
-            (blur)="clearActiveField('title')"
             placeholder="e.g. Mathematics Final Exam" required />
-          <p *ngIf="activeField === 'title' && titleError" class="field-error">{{ titleError }}</p>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="subject">Subject</label>
           <input type="text" id="subject" class="form-input" [(ngModel)]="subject" name="subject"
             (ngModelChange)="onFieldChange()"
-            (focus)="setActiveField('subject')"
-            (blur)="clearActiveField('subject')"
             placeholder="e.g. Mathematics" required />
-          <p *ngIf="activeField === 'subject' && subjectError" class="field-error">{{ subjectError }}</p>
         </div>
 
         <div class="form-grid-2">
@@ -45,10 +39,7 @@
             <label class="form-label" for="duration">Duration (minutes)</label>
             <input type="number" id="duration" class="form-input" [(ngModel)]="durationMinutes" name="duration"
               (ngModelChange)="onFieldChange()"
-              (focus)="setActiveField('durationMinutes')"
-              (blur)="clearActiveField('durationMinutes')"
               placeholder="e.g. 60" min="1" required />
-            <p *ngIf="activeField === 'durationMinutes' && durationError" class="field-error">{{ durationError }}</p>
             <p class="helper-text">How long students have to complete the exam.</p>
           </div>
 
@@ -56,15 +47,12 @@
             <label class="form-label" for="marks">Total Marks</label>
             <input type="number" id="marks" class="form-input" [(ngModel)]="totalMarks" name="marks"
               (ngModelChange)="onFieldChange()"
-              (focus)="setActiveField('totalMarks')"
-              (blur)="clearActiveField('totalMarks')"
               placeholder="e.g. 100" min="1" required />
-            <p *ngIf="activeField === 'totalMarks' && totalMarksError" class="field-error">{{ totalMarksError }}</p>
             <p class="helper-text">Maximum score achievable in this exam.</p>
           </div>
         </div>
 
-        <button type="submit" class="btn-submit" [disabled]="isLoading || !isFormValid">
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
           <span *ngIf="isLoading" class="spinner"></span>
           {{ isLoading ? 'Creating...' : 'Create Exam' }}
         </button>

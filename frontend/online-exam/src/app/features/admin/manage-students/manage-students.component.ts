@@ -156,13 +156,6 @@ export class ManageStudentsComponent implements OnInit {
     return null;
   }
 
-  get editNameError(): string | null {
-    const value = this.editData.fullName.trim();
-    if (!value) return 'Name is required.';
-    if (!this.fullNameRegex.test(value)) return 'Name format is invalid.';
-    return null;
-  }
-
   get isAddFormValid(): boolean {
     return this.validateAddStudent().length === 0;
   }
@@ -179,13 +172,6 @@ export class ManageStudentsComponent implements OnInit {
   }
 
   saveEdit(student: StudentListItem): void {
-    if (!this.editData.fullName.trim()) {
-      this.editError = 'Name is required.'; return;
-    }
-    if (!this.fullNameRegex.test(this.editData.fullName.trim())) {
-      this.editError = 'Name format is invalid.';
-      return;
-    }
     this.editLoading = true;
     this.editError = '';
     this.api.updateStudent(student.id, {

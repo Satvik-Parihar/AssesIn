@@ -59,6 +59,7 @@
 
           <div class="nav-buttons">
             <button class="btn-nav" (click)="prev()" [disabled]="currentIndex === 0 || !canInteract">← Previous</button>
+            <button *ngIf="currentIndex < totalQuestions - 1" class="btn-nav subtle" (click)="skipCurrentQuestion()" [disabled]="!canInteract">Skip &amp; Next</button>
             <button *ngIf="currentIndex < totalQuestions - 1" class="btn-nav primary" (click)="next()" [disabled]="!canInteract">Next →</button>
             <button *ngIf="currentIndex === totalQuestions - 1" class="btn-submit-exam" (click)="submitExam()" [disabled]="!canInteract">
               <span *ngIf="isSubmitting" class="spinner"></span>
@@ -72,11 +73,17 @@
       <div class="nav-panel">
         <div class="nav-panel-card">
           <h3 class="nav-panel-title">Question Navigator</h3>
+          <div class="palette-metrics">
+            <div class="metric-chip answered">Answered: {{ answeredCount }}</div>
+            <div class="metric-chip skipped">Skipped: {{ skippedCount }}</div>
+            <div class="metric-chip remaining">Remaining: {{ remainingCount }}</div>
+          </div>
           <div class="q-grid">
             <button *ngFor="let q of examData.questions; let i = index"
               class="q-nav-btn"
               [class.active]="i === currentIndex"
               [class.answered]="isAnswered(q.id)"
+              [class.skipped]="isSkipped(q.id) && !isAnswered(q.id)"
               [disabled]="!canInteract"
               (click)="goTo(i)">
               {{ i + 1 }}
@@ -85,6 +92,7 @@
 
           <div class="nav-legend">
             <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+            <div class="legend-item"><span class="legend-dot skipped"></span> Skipped</div>
             <div class="legend-item"><span class="legend-dot"></span> Not Answered</div>
             <div class="legend-item"><span class="legend-dot active"></span> Current</div>
           </div>

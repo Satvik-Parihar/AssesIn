@@ -72,14 +72,12 @@ AssesIn is designed for educational institutes where:
 - SQL Server
 - JWT Bearer Authentication
 - BCrypt password hashing
-- xUnit test suite
 
 ### Frontend
 - Angular 17 (standalone components)
 - TypeScript
 - SCSS
 - RxJS
-- Karma + Jasmine tests
 
 ### Tooling
 - Node.js + npm
@@ -133,8 +131,6 @@ OnlineExamSystem/
       Models/
       Services/
       Program.cs
-    OnlineExamAPI.Tests/
-      ExamSystemTests.cs
   frontend/
     online-exam/
       src/
@@ -253,27 +249,13 @@ Use a long random key in real deployments.
 
 ---
 
-## 12. Run and Test
+## 12. Run
 
 ### Start both backend and frontend
 
 ```bash
 npm run start-all
 ```
-
-### Backend tests
-
-```bash
-npm run test:backend
-```
-
-### Frontend tests
-
-```bash
-npm run test:frontend
-```
-
----
 
 ## 13. Data and Seeding Policy
 

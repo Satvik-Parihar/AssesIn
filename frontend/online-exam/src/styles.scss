@@ -1454,6 +1454,13 @@ label.option-label.selected .option-circle {
 
 .nav-buttons { display: flex; gap: 12px; }
 
+.btn-nav.subtle {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+.btn-nav.subtle:hover { background: #e0e7ff; color: #3730a3; }
+
 /* Primary variant of btn-nav (exam navigation) */
 .btn-nav.primary {
   background: var(--primary);
@@ -1493,6 +1500,26 @@ label.option-label.selected .option-circle {
 
 .nav-panel-title { font-size: 13px; font-weight: 700; color: var(--secondary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
 
+.palette-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.metric-chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+}
+
+.metric-chip.answered { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+.metric-chip.skipped  { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+.metric-chip.remaining { background: #e2e8f0; color: #334155; border-color: #cbd5e1; }
+
 .q-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 16px; }
 
 .q-nav-btn {
@@ -1514,8 +1541,10 @@ label.option-label.selected .option-circle {
 
 .q-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
 .q-nav-btn.answered { background: var(--primary); border-color: var(--primary); color: #fff; }
+.q-nav-btn.skipped { background: #fff7ed; border-color: #fdba74; color: #c2410c; }
 .q-nav-btn.active { border: 2px solid #16a34a; color: #16a34a; background: var(--success-bg); }
 .q-nav-btn.answered.active { background: #16a34a; border-color: #16a34a; color: #fff; }
+.q-nav-btn.skipped.active { background: #fed7aa; border-color: #ea580c; color: #9a3412; }
 
 .nav-legend { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; }
 
@@ -1523,6 +1552,7 @@ label.option-label.selected .option-circle {
 
 .legend-dot { width: 12px; height: 12px; border-radius: 2px; border: 1.5px solid var(--border); flex-shrink: 0; }
 .legend-dot.answered { background: var(--primary); border-color: var(--primary); }
+.legend-dot.skipped { background: #fdba74; border-color: #fb923c; }
 .legend-dot.active   { border-color: #16a34a; border-width: 2px; }
 
 /* ── Results ─────────────────────────────────────────────────── */

@@ -21,8 +21,6 @@ export class GenerateSetsComponent implements OnInit {
   errorMessage = '';
   isLoading = false;
   setNames = ['Set A', 'Set B', 'Set C', 'Set D', 'Set E'];
-  activeField = '';
-  private datetimeLocalRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
   constructor(private api: ApiService, private route: ActivatedRoute) {}
 
@@ -47,9 +45,8 @@ export class GenerateSetsComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const errors = this.validateForm();
-
-    if (errors.length > 0) {
+    if (!this.selectedExamId) {
+      this.errorMessage = 'Please select an exam first.';
       return;
     }
 
@@ -77,68 +74,5 @@ export class GenerateSetsComponent implements OnInit {
 
   onFieldChange(): void {
     this.errorMessage = '';
-  }
-
-  setActiveField(field: string): void {
-    this.activeField = field;
-  }
-
-  clearActiveField(field: string): void {
-    if (this.activeField === field) this.activeField = '';
-  }
-
-  private validateForm(): string[] {
-    const errors: string[] = [];
-
-    if (!this.selectedExamId) errors.push('Please select an exam.');
-    if (!this.startTime) errors.push('Start date and time is required.');
-    if (!this.endTime) errors.push('End date and time is required.');
-
-    if (this.startTime && !this.datetimeLocalRegex.test(this.startTime)) {
-      errors.push('Start date and time format is invalid.');
-    }
-
-    if (this.endTime && !this.datetimeLocalRegex.test(this.endTime)) {
-      errors.push('End date and time format is invalid.');
-    }
-
-    if (!Number.isInteger(this.numberOfSets) || this.numberOfSets < 1 || this.numberOfSets > 5) {
-      errors.push('Number of sets must be between 1 and 5.');
-    }
-
-    return errors;
-  }
-
-  get examError(): string | null {
-    if (!this.selectedExamId) return 'Please select an exam.';
-    return null;
-  }
-
-  get numberOfSetsError(): string | null {
-    if (!Number.isInteger(this.numberOfSets) || this.numberOfSets < 1 || this.numberOfSets > 5) {
-      return 'Number of sets must be between 1 and 5.';
-    }
-    return null;
-  }
-
-  get startTimeError(): string | null {
-    if (!this.startTime) return 'Start date and time is required.';
-    if (!this.datetimeLocalRegex.test(this.startTime)) return 'Start date and time format is invalid.';
-    if (new Date(this.startTime) <= new Date()) return 'Start time must be in the future.';
-    return null;
-  }
-
-  get endTimeError(): string | null {
-    if (!this.endTime) return 'End date and time is required.';
-    if (!this.datetimeLocalRegex.test(this.endTime)) return 'End date and time format is invalid.';
-    if (new Date(this.endTime) <= new Date()) return 'End time must be in the future.';
-    if (this.startTime && this.datetimeLocalRegex.test(this.startTime) && new Date(this.endTime) <= new Date(this.startTime)) {
-      return 'End time must be after start time.';
-    }
-    return null;
-  }
-
-  get isFormValid(): boolean {
-    return this.validateForm().length === 0;
   }
 }
