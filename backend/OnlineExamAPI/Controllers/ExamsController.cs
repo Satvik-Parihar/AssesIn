@@ -224,10 +224,25 @@ public class ExamsController : ControllerBase
 
         var totalQuestionMarks = questions.Sum(q => q.Marks);
         if (totalQuestionMarks != exam.TotalMarks)
+        {
+            var markBreakdown = questions
+                .OrderBy(q => q.Id)
+                .Select(q => new
+                {
+                    questionId = q.Id,
+                    marks = q.Marks
+                })
+                .ToList();
+
             return BadRequest(new
             {
-                message = $"Cannot publish exam. Sum of question marks ({totalQuestionMarks}) must match exam total marks ({exam.TotalMarks})."
+                message = $"Cannot publish exam. Sum of question marks ({totalQuestionMarks}) must match exam total marks ({exam.TotalMarks}).",
+                expectedTotalMarks = exam.TotalMarks,
+                actualTotalQuestionMarks = totalQuestionMarks,
+                questionCount = questions.Count,
+                markBreakdown
             });
+        }
 
         // Delete old sets for this exam
         var oldSets = await _db.QuestionSets
