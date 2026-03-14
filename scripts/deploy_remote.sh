@@ -60,7 +60,7 @@ EnvironmentFile=-/var/www/assessin/shared/env/api.env
 WantedBy=multi-user.target
 EOF
 
-if [[ -f /etc/letsencrypt/live/assessin.me/fullchain.pem && -f /etc/letsencrypt/live/assessin.me/privkey.pem ]]; then
+if sudo test -f /etc/letsencrypt/live/assessin.me/fullchain.pem && sudo test -f /etc/letsencrypt/live/assessin.me/privkey.pem; then
   sudo tee /etc/nginx/sites-available/assessin >/dev/null <<'EOF'
 server {
 	listen 80;
