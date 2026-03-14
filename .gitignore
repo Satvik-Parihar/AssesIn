@@ -56,3 +56,5 @@ secrets.json
 artifacts/
 out/
 publish/
+deploy/
+*.pem

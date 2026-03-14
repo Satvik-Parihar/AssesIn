@@ -8,8 +8,19 @@ using OnlineExamAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Database ──────────────────────────────────────────────────────────────────
+var dbProvider = builder.Configuration["Database:Provider"];
 builder.Services.AddDbContext<AppDbContext>(opts =>
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.Equals(dbProvider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+    {
+        opts.UseSqlite(connectionString);
+    }
+    else
+    {
+        opts.UseSqlServer(connectionString);
+    }
+});
 
 // ── JWT Authentication ────────────────────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -34,7 +45,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("AllowAngular", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(
+                "http://localhost:4200",
+                "http://3.109.133.251",
+                "https://3.109.133.251")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
