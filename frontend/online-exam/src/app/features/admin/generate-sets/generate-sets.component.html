@@ -39,11 +39,13 @@
           <div class="form-row-2">
             <div class="form-group">
               <label class="form-label">Start Date &amp; Time</label>
-              <input type="datetime-local" class="form-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" name="startTime" required />
+              <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" name="startTime" required />
+              <p class="helper-text">Choose the exact start window (local time).</p>
             </div>
             <div class="form-group">
               <label class="form-label">End Date &amp; Time</label>
-              <input type="datetime-local" class="form-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" name="endTime" required />
+              <input type="datetime-local" class="form-input datetime-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" name="endTime" required />
+              <p class="helper-text">Set a closing time after the start.</p>
             </div>
           </div>
         </div>

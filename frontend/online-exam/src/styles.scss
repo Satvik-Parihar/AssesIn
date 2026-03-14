@@ -1264,9 +1264,9 @@ select.form-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
 /* ── Validity Section (Generate Sets) ───────────────────────── */
 .validity-section {
   margin: 20px 0;
-  padding: 16px;
-  background: #f8fafc;
-  border: 1.5px solid var(--border);
+  padding: 18px;
+  background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+  border: 1.5px solid #dbe7f5;
   border-radius: var(--radius-xs);
 }
 
@@ -1278,6 +1278,50 @@ select.form-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 4px;
+}
+
+.datetime-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-weight: 600;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #ffffff;
+  padding-right: 12px;
+}
+
+.datetime-input:hover {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+.datetime-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  background: #ffffff;
+}
+
+.datetime-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.95;
+  filter: invert(33%) sepia(83%) saturate(1468%) hue-rotate(210deg) brightness(95%) contrast(94%);
+}
+
+.validity-section .form-row-2 > .form-group {
+  min-width: 0;
+}
+
+.datetime-input::-webkit-datetime-edit,
+.datetime-input::-webkit-datetime-edit-fields-wrapper,
+.datetime-input::-webkit-datetime-edit-text,
+.datetime-input::-webkit-datetime-edit-month-field,
+.datetime-input::-webkit-datetime-edit-day-field,
+.datetime-input::-webkit-datetime-edit-year-field,
+.datetime-input::-webkit-datetime-edit-hour-field,
+.datetime-input::-webkit-datetime-edit-minute-field,
+.datetime-input::-webkit-datetime-edit-ampm-field {
+  color: #0f172a;
 }
 
 /* ── Exam Status (Student Dashboard) ────────────────────────── */

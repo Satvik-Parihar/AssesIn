@@ -204,8 +204,8 @@ public class ExamsController : ControllerBase
         var startUtc = request.StartTime.ToUniversalTime();
         var endUtc = request.EndTime.ToUniversalTime();
 
-        if (startUtc <= now)
-            return BadRequest(new { message = "Start time must be in the future." });
+        if (startUtc < now)
+            return BadRequest(new { message = "Start time cannot be in the past." });
 
         if (endUtc <= startUtc)
             return BadRequest(new { message = "End time must be after start time." });
