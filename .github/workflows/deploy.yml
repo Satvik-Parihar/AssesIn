@@ -81,6 +81,6 @@ jobs:
         env:
           DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
         run: |
-          TARGET_URL="${DEPLOY_URL:-http://assessin.me}"
+          TARGET_URL="${DEPLOY_URL:-http://13.234.187.66}"
           echo "Checking $TARGET_URL"
           curl -I --retry 5 --retry-delay 5 "$TARGET_URL"
