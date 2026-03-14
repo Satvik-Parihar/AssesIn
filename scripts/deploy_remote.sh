@@ -60,30 +60,100 @@ EnvironmentFile=-/var/www/assessin/shared/env/api.env
 WantedBy=multi-user.target
 EOF
 
-sudo tee /etc/nginx/sites-available/assessin >/dev/null <<'EOF'
+if [[ -f /etc/letsencrypt/live/assessin.me/fullchain.pem && -f /etc/letsencrypt/live/assessin.me/privkey.pem ]]; then
+  sudo tee /etc/nginx/sites-available/assessin >/dev/null <<'EOF'
 server {
-		listen 80;
-		server_name assessin.me www.assessin.me _;
+	listen 80;
+	listen [::]:80;
+	server_name assessin.me www.assessin.me;
+	return 301 https://$host$request_uri;
+}
 
-		root /var/www/assessin/current/.artifacts/web;
-		index index.html;
+server {
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name assessin.me www.assessin.me;
 
-		location /api/ {
-				proxy_pass http://127.0.0.1:5000/api/;
-				proxy_http_version 1.1;
-				proxy_set_header Upgrade $http_upgrade;
-				proxy_set_header Connection keep-alive;
-				proxy_set_header Host $host;
-				proxy_cache_bypass $http_upgrade;
-				proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-				proxy_set_header X-Forwarded-Proto $scheme;
-		}
+	root /var/www/assessin/current/.artifacts/web;
+	index index.html;
 
-		location / {
-				try_files $uri $uri/ /index.html;
-		}
+	ssl_certificate /etc/letsencrypt/live/assessin.me/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/assessin.me/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+	location /api/ {
+		proxy_pass http://127.0.0.1:5000/api/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection keep-alive;
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location / {
+		try_files $uri $uri/ /index.html;
+	}
 }
 EOF
+
+  sudo tee /etc/nginx/conf.d/assessin-deny-ip.conf >/dev/null <<'EOF'
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	server_name _;
+	return 444;
+}
+
+server {
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+	server_name _;
+	ssl_certificate /etc/letsencrypt/live/assessin.me/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/assessin.me/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+	return 444;
+}
+EOF
+else
+  sudo tee /etc/nginx/sites-available/assessin >/dev/null <<'EOF'
+server {
+	listen 80;
+	listen [::]:80;
+	server_name assessin.me www.assessin.me;
+
+	root /var/www/assessin/current/.artifacts/web;
+	index index.html;
+
+	location /api/ {
+		proxy_pass http://127.0.0.1:5000/api/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection keep-alive;
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
+	location / {
+		try_files $uri $uri/ /index.html;
+	}
+}
+EOF
+
+  sudo tee /etc/nginx/conf.d/assessin-deny-ip.conf >/dev/null <<'EOF'
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	server_name _;
+	return 444;
+}
+EOF
+fi
 
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo ln -sfn /etc/nginx/sites-available/assessin /etc/nginx/sites-enabled/assessin
