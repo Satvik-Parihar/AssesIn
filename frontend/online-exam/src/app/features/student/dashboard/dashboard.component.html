@@ -1,0 +1,74 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Exam Dashboard</h1>
+        <p class="page-subtitle">Welcome, {{ auth.currentUser?.fullName }}! Choose an exam to begin.</p>
+      </div>
+      <a routerLink="/student/results" class="btn-outline-sm">My Results</a>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-error mb-16">{{ errorMessage }}</div>
+    <div *ngIf="flashMessage" class="alert-error mb-16 d-flex justify-content-between align-items-center">
+      <span>{{ flashMessage }}</span>
+      <button type="button" class="btn-outline-sm" (click)="flashMessage = ''">Dismiss</button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">Loading available exams...</div>
+
+    <div *ngIf="!isLoading && exams.length === 0" class="empty-state-large">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="2"/>
+      </svg>
+      <p>No exams available at the moment. Check back later.</p>
+    </div>
+
+    <div *ngIf="!isLoading && exams.length > 0" class="exam-grid">
+      <div *ngFor="let exam of exams" class="exam-card">
+        <div class="exam-card-header">
+          <span class="badge-subject">{{ exam.subject }}</span>
+          <span class="exam-questions">{{ exam.questionCount }} questions</span>
+        </div>
+
+        <div class="exam-status-row">
+          <span class="exam-status-badge status-live" *ngIf="examStatus(exam) === 'live'">● Live</span>
+          <span class="exam-status-badge status-upcoming" *ngIf="examStatus(exam) === 'upcoming'">⏳ Upcoming</span>
+          <span class="exam-status-badge status-ended" *ngIf="examStatus(exam) === 'ended'">✕ Ended</span>
+        </div>
+
+        <h3 class="exam-title">{{ exam.title }}</h3>
+
+        <div class="exam-meta">
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>{{ exam.durationMinutes }} minutes</span>
+          </div>
+          <div class="meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span>{{ exam.totalMarks }} marks</span>
+          </div>
+        </div>
+
+        <div class="exam-validity" *ngIf="exam.startTime && exam.endTime">
+          <div class="validity-row">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>{{ formatTime(exam.startTime) }} – {{ formatTime(exam.endTime) }}</span>
+          </div>
+        </div>
+
+        <button
+          class="btn-start"
+          (click)="startExam(exam.id)"
+          [disabled]="startingExamId === exam.id || examStatus(exam) !== 'live'">
+          <span *ngIf="startingExamId === exam.id" class="spinner spinner-sm"></span>
+          {{ startingExamId === exam.id ? 'Starting...' : 'Start Exam' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

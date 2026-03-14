@@ -1,0 +1,109 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Exam Results</h1>
+        <p class="page-subtitle">Your performance summary</p>
+      </div>
+      <a routerLink="/student/dashboard" class="btn-outline-sm">← Back to Dashboard</a>
+    </div>
+
+    <!-- Latest Result Card -->
+    <div *ngIf="latestResult" class="result-card">
+      <div class="result-header" [class.result-pass]="isPassed" [class.result-fail]="!isPassed">
+        <div class="result-icon">
+          <svg *ngIf="isPassed" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <svg *ngIf="!isPassed" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="result-status-text">{{ isPassed ? 'Congratulations! You Passed' : 'Better Luck Next Time' }}</h2>
+          <p class="result-exam-name">{{ latestResult.examTitle }} &bull; {{ latestResult.subject }}</p>
+        </div>
+        <div class="result-grade-badge">{{ grade }}</div>
+      </div>
+
+      <div class="result-stats">
+        <div class="result-stat">
+          <p class="result-stat-label">Score</p>
+          <p class="result-stat-value primary">{{ latestResult.score }}/{{ latestResult.totalMarks }}</p>
+        </div>
+        <div class="result-stat">
+          <p class="result-stat-label">Percentage</p>
+          <p class="result-stat-value">{{ percentage }}%</p>
+        </div>
+        <div class="result-stat">
+          <p class="result-stat-label">Correct Answers</p>
+          <p class="result-stat-value green">{{ latestResult.correctCount }}</p>
+        </div>
+        <div class="result-stat">
+          <p class="result-stat-label">Wrong Answers</p>
+          <p class="result-stat-value red">{{ latestResult.incorrectCount }}</p>
+        </div>
+        <div class="result-stat">
+          <p class="result-stat-label">Unanswered</p>
+          <p class="result-stat-value">{{ latestResult.totalQuestions - latestResult.correctCount - latestResult.incorrectCount }}</p>
+        </div>
+        <div class="result-stat">
+          <p class="result-stat-label">Total Questions</p>
+          <p class="result-stat-value">{{ latestResult.totalQuestions }}</p>
+        </div>
+      </div>
+
+      <!-- Score bar -->
+      <div class="score-progress-wrapper">
+        <div class="score-progress-bar">
+          <div class="score-progress-fill" [style.width.%]="percentage" [class.fill-pass]="isPassed" [class.fill-fail]="!isPassed"></div>
+        </div>
+        <p class="score-progress-label">{{ percentage }}% — {{ grade }}</p>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card mt-32">
+      <div class="card-header-row">
+        <h2 class="card-title">Attempt History</h2>
+      </div>
+      <div *ngIf="isLoading" class="loading-state">Loading history...</div>
+      <div *ngIf="!isLoading && allResults.length === 0" class="empty-state">No previous attempts.</div>
+      <div *ngIf="!isLoading && allResults.length > 0" class="table-wrapper">
+        <table class="oes-table">
+          <thead>
+            <tr>
+              <th>Exam</th>
+              <th>Subject</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Wrong</th>
+              <th>Grade</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of allResults">
+              <td class="font-medium">{{ r.examTitle }}</td>
+              <td><span class="badge-subject">{{ r.subject }}</span></td>
+              <td>{{ r.score }}/{{ r.totalMarks }}</td>
+              <td><span class="badge-correct">{{ r.correctCount }}</span></td>
+              <td><span class="badge-incorrect">{{ r.incorrectCount }}</span></td>
+              <td>
+                <span [class]="getPercentage(r.score, r.totalMarks) >= 50 ? 'grade-pass' : 'grade-fail'" class="grade-badge">
+                  {{ calcGrade(getPercentage(r.score, r.totalMarks)) }} ({{ getPercentage(r.score, r.totalMarks) }}%)
+                </span>
+              </td>
+              <td class="date-cell">{{ r.submittedAt | date:'dd MMM yyyy' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-24 text-center">
+      <a routerLink="/student/dashboard" class="btn-primary">Take Another Exam</a>
+    </div>
+  </div>
+</div>

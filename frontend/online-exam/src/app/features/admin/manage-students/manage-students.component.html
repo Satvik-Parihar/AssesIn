@@ -1,0 +1,158 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Manage Students</h1>
+        <p class="page-subtitle">Create and manage student accounts for your institution.</p>
+      </div>
+      <button [class]="showAddForm ? 'btn-secondary' : 'btn-primary'" (click)="toggleAddForm()">
+        <ng-container *ngIf="!showAddForm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px; vertical-align:middle">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          Add Student
+        </ng-container>
+        <ng-container *ngIf="showAddForm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px; vertical-align:middle">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Cancel
+        </ng-container>
+      </button>
+    </div>
+
+    <!-- Global Messages -->
+    <div *ngIf="successMessage" class="alert-success" role="alert">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert-error" role="alert">{{ errorMessage }}</div>
+
+    <!-- Add Student Form -->
+    <div *ngIf="showAddForm" class="card mb-24">
+      <div class="card-header-row">
+        <h2 class="card-title">New Student</h2>
+      </div>
+      <div class="card-body">
+        <p class="helper-text mb-16">Students added here are automatically assigned to <strong>{{ auth.currentUser?.instituteName || 'your institute' }}</strong>.</p>
+        <form (ngSubmit)="submitAddStudent()" #addForm="ngForm" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" [(ngModel)]="newStudent.fullName" name="fullName"
+                (ngModelChange)="onAddFieldChange()"
+                (focus)="setAddActiveField('fullName')"
+                (blur)="clearAddActiveField('fullName')"
+                placeholder="e.g. Jane Smith" required>
+              <p *ngIf="addActiveField === 'fullName' && addFullNameError" class="field-error">{{ addFullNameError }}</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" [(ngModel)]="newStudent.email" name="email"
+                (ngModelChange)="onAddFieldChange()"
+                (focus)="setAddActiveField('email')"
+                (blur)="clearAddActiveField('email')"
+                placeholder="e.g. jane@example.com" required>
+              <p *ngIf="addActiveField === 'email' && addEmailError" class="field-error">{{ addEmailError }}</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" [(ngModel)]="newStudent.password" name="password"
+                (ngModelChange)="onAddFieldChange()"
+                (focus)="setAddActiveField('password')"
+                (blur)="clearAddActiveField('password')"
+                placeholder="Min 6 chars, letter + number" required>
+              <p *ngIf="addActiveField === 'password' && addPasswordError" class="field-error">{{ addPasswordError }}</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input" [(ngModel)]="newStudent.confirmPassword" name="confirmPassword"
+                (ngModelChange)="onAddFieldChange()"
+                (focus)="setAddActiveField('confirmPassword')"
+                (blur)="clearAddActiveField('confirmPassword')"
+                placeholder="Re-enter password" required>
+              <p *ngIf="addActiveField === 'confirmPassword' && addConfirmPasswordError" class="field-error">{{ addConfirmPasswordError }}</p>
+            </div>
+          </div>
+          <div *ngIf="addError" class="alert-error mt-16">{{ addError }}</div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="addLoading || !isAddFormValid">
+              {{ addLoading ? 'Creating...' : 'Create Student' }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="toggleAddForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="card">
+      <div class="card-header-row">
+        <h2 class="card-title">Students</h2>
+        <span class="badge-count">{{ students.length }} total</span>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-state">Loading students...</div>
+
+      <div *ngIf="!isLoading && students.length === 0" class="empty-state">
+        No students yet. Click <strong>Add Student</strong> to get started.
+      </div>
+
+      <div *ngIf="!isLoading && students.length > 0" class="table-wrapper">
+        <table class="oes-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let student of students; let i = index">
+              <!-- View row -->
+              <tr *ngIf="editingId !== student.id">
+                <td class="text-muted">{{ i + 1 }}</td>
+                <td class="font-medium">{{ student.fullName }}</td>
+                <td>{{ student.email }}</td>
+                <td>
+                  <span class="exam-status-badge" [ngClass]="student.isActive ? 'status-live' : 'status-ended'">
+                    {{ student.isActive ? '&#9679; Active' : '&#9679; Inactive' }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ student.createdAt | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <button class="action-link" (click)="startEdit(student)">Edit</button>
+                  <button class="action-link danger ml-8" *ngIf="student.isActive" (click)="deactivate(student)">
+                    Deactivate
+                  </button>
+                </td>
+              </tr>
+              <!-- Inline edit row -->
+              <tr *ngIf="editingId === student.id" class="edit-row">
+                <td class="text-muted">{{ i + 1 }}</td>
+                <td>
+                  <input type="text" class="form-input-sm" [(ngModel)]="editData.fullName" placeholder="Full name">
+                  <div *ngIf="editNameError" class="field-error">{{ editNameError }}</div>
+                </td>
+                <td class="text-muted">{{ student.email }}</td>
+                <td>
+                  <label class="toggle-label">
+                    <input type="checkbox" [(ngModel)]="editData.isActive">
+                    <span>{{ editData.isActive ? 'Active' : 'Inactive' }}</span>
+                  </label>
+                </td>
+                <td class="text-muted">{{ student.createdAt | date:'dd MMM yyyy' }}</td>
+                <td>
+                  <button class="action-link" (click)="saveEdit(student)" [disabled]="editLoading">Save</button>
+                  <button class="action-link danger ml-8" (click)="cancelEdit()">Cancel</button>
+                  <div *ngIf="editError" class="field-error">{{ editError }}</div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,203 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Exam Details</h1>
+        <p class="page-subtitle">View exam status, attempts, and full student reports.</p>
+      </div>
+      <a routerLink="/admin/dashboard" class="btn-outline-sm">Back to Dashboard</a>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-error mb-16">{{ errorMessage }}</div>
+    <div *ngIf="isLoading" class="loading-state">Loading exam details...</div>
+
+    <ng-container *ngIf="!isLoading && examDetail as exam">
+      <div class="card mb-24">
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-title">{{ exam.title }}</h2>
+            <p class="page-subtitle">{{ exam.subject }}</p>
+          </div>
+          <div class="exam-status-row">
+            <span class="exam-status-badge status-live" *ngIf="exam.isLive">&#9679; Live</span>
+            <span class="exam-status-badge status-ended" *ngIf="!exam.isLive && exam.endTime">&#9632; Ended</span>
+            <span class="exam-status-badge status-upcoming" *ngIf="!exam.isLive && !exam.endTime">&#9643; Draft</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <p class="stat-label">Duration</p>
+                <p class="stat-value">{{ exam.durationMinutes }}m</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <p class="stat-label">Total Marks</p>
+                <p class="stat-value">{{ exam.totalMarks }}</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <p class="stat-label">Attempts</p>
+                <p class="stat-value">{{ exam.totalAttempts }}</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+              </div>
+              <div class="stat-content">
+                <p class="stat-label">Questions</p>
+                <p class="stat-value">{{ exam.questionCount }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="exam-validity" *ngIf="exam.startTime || exam.endTime">
+            <div class="validity-row" *ngIf="exam.startTime">
+              <strong>Starts:</strong> {{ exam.startTime | date:'dd MMM yyyy, h:mm a' }}
+            </div>
+            <div class="validity-row" *ngIf="exam.endTime">
+              <strong>Ends:</strong> {{ exam.endTime | date:'dd MMM yyyy, h:mm a' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <h2 class="card-title">Student Attempts</h2>
+          <span class="badge-count">{{ exam.completedAttempts }}/{{ exam.totalAttempts }} completed</span>
+        </div>
+
+        <div *ngIf="exam.attempts.length === 0" class="empty-state">
+          No student has attempted this exam yet. This page refreshes automatically.
+        </div>
+
+        <div *ngIf="exam.attempts.length > 0" class="table-wrapper">
+          <table class="oes-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Correct</th>
+                <th>Incorrect</th>
+                <th>Started</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let attempt of exam.attempts">
+                <tr>
+                  <td>
+                    <div class="student-info">
+                      <p class="student-name">{{ attempt.studentName }}</p>
+                      <p class="student-email">{{ attempt.studentEmail }}</p>
+                      <p class="student-email">{{ attempt.studentInstitute }}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="exam-status-badge" [ngClass]="getAttemptStatus(attempt) === 'ended' ? 'status-ended' : 'status-live'">
+                      {{ attempt.isCompleted ? 'Completed' : 'In Progress' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf="attempt.isCompleted" class="score-cell">{{ attempt.score }}/{{ attempt.totalMarks }}</span>
+                    <span *ngIf="!attempt.isCompleted" class="text-muted">Pending</span>
+                  </td>
+                  <td>
+                    <span *ngIf="attempt.isCompleted" class="badge-correct">{{ attempt.correctCount }}</span>
+                    <span *ngIf="!attempt.isCompleted" class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <span *ngIf="attempt.isCompleted" class="badge-incorrect">{{ attempt.incorrectCount }}</span>
+                    <span *ngIf="!attempt.isCompleted" class="text-muted">-</span>
+                  </td>
+                  <td class="date-cell">{{ attempt.startedAt | date:'dd MMM yyyy, h:mm a' }}</td>
+                  <td class="date-cell">{{ attempt.submittedAt ? (attempt.submittedAt | date:'dd MMM yyyy, h:mm a') : 'Not submitted' }}</td>
+                  <td>
+                    <button class="action-link" type="button" *ngIf="attempt.isCompleted" (click)="toggleDetails(attempt.attemptId)">
+                      {{ expandedAttemptId === attempt.attemptId ? 'Hide Report' : 'View Report' }}
+                    </button>
+                    <span *ngIf="!attempt.isCompleted" class="text-muted">Waiting</span>
+                  </td>
+                </tr>
+
+                <tr *ngIf="expandedAttemptId === attempt.attemptId">
+                  <td colspan="8">
+                    <div *ngIf="detailLoading" class="loading-state">Loading full result...</div>
+                    <div *ngIf="detailError" class="alert-error">{{ detailError }}</div>
+
+                    <div *ngIf="detailMap[attempt.attemptId] as detail" class="card mt-16">
+                      <div class="card-header-row">
+                        <h3 class="card-title">Attempt #{{ detail.attemptId }} Report</h3>
+                        <span class="grade-badge" [ngClass]="getGradeClass(detail.percentage)">
+                          {{ getGrade(detail.percentage) }} ({{ detail.percentage }}%)
+                        </span>
+                      </div>
+
+                      <div class="card-body">
+                        <p class="helper-text mb-16">
+                          Score {{ detail.score }}/{{ detail.totalMarks }} | Unanswered {{ detail.unansweredCount }} | Submitted {{ detail.submittedAt | date:'dd MMM yyyy, h:mm a' }}
+                        </p>
+
+                        <div class="table-wrapper">
+                          <table class="oes-table">
+                            <thead>
+                              <tr>
+                                <th>Question</th>
+                                <th>Marks</th>
+                                <th>Selected</th>
+                                <th>Correct</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let answer of detail.answers">
+                                <td class="font-medium">{{ answer.questionText }}</td>
+                                <td>{{ answer.marks }}</td>
+                                <td>{{ getOptionLabel(answer.selectedOption) }}</td>
+                                <td>{{ answer.correctOption }}</td>
+                                <td>
+                                  <span class="exam-status-badge status-live" *ngIf="answer.isCorrect">Correct</span>
+                                  <span class="exam-status-badge status-ended" *ngIf="!answer.isCorrect && answer.selectedOption">Incorrect</span>
+                                  <span class="exam-status-badge status-upcoming" *ngIf="!answer.selectedOption">Unanswered</span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

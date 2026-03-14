@@ -1,0 +1,100 @@
+<div class="exam-page" *ngIf="examData">
+  <!-- Exam Header -->
+  <div class="exam-header">
+    <div class="oes-container d-flex align-items-center justify-content-between">
+      <div>
+        <h2 class="exam-header-title">{{ examData.examTitle }}</h2>
+        <p class="exam-header-sub">{{ examData.subject }} &bull; {{ totalQuestions }} Questions &bull; {{ examData.totalMarks }} Marks &bull; {{ examData.durationMinutes }} Minutes</p>
+      </div>
+      <div class="d-flex align-items-center gap-16">
+        <div class="progress-info">{{ answeredCount }}/{{ totalQuestions }} answered</div>
+        <div class="timer-box" [ngClass]="timerClass">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          {{ formattedTime }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oes-container">
+    <div *ngIf="errorMessage" class="alert-error mb-16">{{ errorMessage }}</div>
+
+    <div class="info-box mb-16">
+      <p>This exam runs for {{ examData.durationMinutes }} minutes and will auto-submit when the timer reaches zero.</p>
+      <p>Valid until: {{ allowedUntilLocal }}</p>
+    </div>
+
+    <div class="exam-layout">
+      <!-- Left: Question Panel -->
+      <div class="question-panel">
+        <div *ngIf="currentQuestion" class="question-card">
+          <div class="question-header">
+            <span class="q-number">Question {{ currentIndex + 1 }} of {{ totalQuestions }}</span>
+            <span class="q-marks">{{ currentQuestion.marks }} mark(s)</span>
+          </div>
+
+          <p class="q-text">{{ currentQuestion.text }}</p>
+
+          <div class="options-list">
+            <label *ngFor="let opt of ['A','B','C','D']"
+              class="option-label"
+              [class.selected]="getAnswerForQuestion(currentQuestion.id) === opt"
+              (click)="selectOption(opt)">
+              <span class="option-circle">{{ opt }}</span>
+              <span class="option-text">
+                {{ opt === 'A' ? currentQuestion.optionA :
+                   opt === 'B' ? currentQuestion.optionB :
+                   opt === 'C' ? currentQuestion.optionC :
+                   currentQuestion.optionD }}
+              </span>
+              <span *ngIf="getAnswerForQuestion(currentQuestion.id) === opt" class="option-check">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+                </svg>
+              </span>
+            </label>
+          </div>
+
+          <div class="nav-buttons">
+            <button class="btn-nav" (click)="prev()" [disabled]="currentIndex === 0 || !canInteract">← Previous</button>
+            <button *ngIf="currentIndex < totalQuestions - 1" class="btn-nav primary" (click)="next()" [disabled]="!canInteract">Next →</button>
+            <button *ngIf="currentIndex === totalQuestions - 1" class="btn-submit-exam" (click)="submitExam()" [disabled]="!canInteract">
+              <span *ngIf="isSubmitting" class="spinner"></span>
+              {{ isSubmitting ? 'Submitting...' : 'Submit Exam' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Navigation Panel -->
+      <div class="nav-panel">
+        <div class="nav-panel-card">
+          <h3 class="nav-panel-title">Question Navigator</h3>
+          <div class="q-grid">
+            <button *ngFor="let q of examData.questions; let i = index"
+              class="q-nav-btn"
+              [class.active]="i === currentIndex"
+              [class.answered]="isAnswered(q.id)"
+              [disabled]="!canInteract"
+              (click)="goTo(i)">
+              {{ i + 1 }}
+            </button>
+          </div>
+
+          <div class="nav-legend">
+            <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+            <div class="legend-item"><span class="legend-dot"></span> Not Answered</div>
+            <div class="legend-item"><span class="legend-dot active"></span> Current</div>
+          </div>
+
+          <button class="btn-submit-exam mt-16 w-full" (click)="submitExam()" [disabled]="!canInteract">
+            <span *ngIf="isSubmitting" class="spinner"></span>
+            {{ isSubmitting ? 'Submitting...' : 'Submit Exam' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

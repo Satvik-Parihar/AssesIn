@@ -1,0 +1,69 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Generate Question Sets</h1>
+        <p class="page-subtitle">Create randomized question sets using Fisher-Yates shuffle</p>
+      </div>
+    </div>
+
+    <div class="form-card" style="max-width: 560px;">
+      <div *ngIf="successMessage" class="alert-success mb-16">{{ successMessage }}</div>
+      <div *ngIf="errorMessage" class="alert-error mb-16">{{ errorMessage }}</div>
+
+      <form (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="examSelect">Select Exam</label>
+          <select id="examSelect" class="form-input" [(ngModel)]="selectedExamId" (ngModelChange)="onFieldChange()" (focus)="setActiveField('selectedExamId')" (blur)="clearActiveField('selectedExamId')" name="examSelect">
+            <option [value]="null" disabled>-- Choose an exam --</option>
+            <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }} ({{ exam.subject }})</option>
+          </select>
+          <p *ngIf="activeField === 'selectedExamId' && examError" class="field-error">{{ examError }}</p>
+          <p *ngIf="exams.length === 0" class="field-error">No exams available. <a routerLink="/admin/create-exam" class="auth-link">Create an exam first</a></p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Number of Sets (1–5)</label>
+          <input type="range" class="form-range" [(ngModel)]="numberOfSets" (ngModelChange)="onFieldChange()" (focus)="setActiveField('numberOfSets')" (blur)="clearActiveField('numberOfSets')" name="numSets" min="1" max="5" />
+          <p *ngIf="activeField === 'numberOfSets' && numberOfSetsError" class="field-error">{{ numberOfSetsError }}</p>
+          <div class="sets-preview">
+            <span *ngFor="let name of setNames.slice(0, numberOfSets)" class="set-badge">{{ name }}</span>
+          </div>
+          <p class="helper-text">{{ numberOfSets }} set(s) will be generated with same questions in different order.</p>
+        </div>
+
+        <div class="validity-section">
+          <h3 class="validity-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Exam Validity Period
+          </h3>
+          <p class="helper-text">Students can only access the exam between these times.</p>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Start Date &amp; Time</label>
+              <input type="datetime-local" class="form-input" [(ngModel)]="startTime" (ngModelChange)="onFieldChange()" (focus)="setActiveField('startTime')" (blur)="clearActiveField('startTime')" name="startTime" required />
+              <p *ngIf="activeField === 'startTime' && startTimeError" class="field-error">{{ startTimeError }}</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Date &amp; Time</label>
+              <input type="datetime-local" class="form-input" [(ngModel)]="endTime" (ngModelChange)="onFieldChange()" (focus)="setActiveField('endTime')" (blur)="clearActiveField('endTime')" name="endTime" required />
+              <p *ngIf="activeField === 'endTime' && endTimeError" class="field-error">{{ endTimeError }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box mt-16">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="info-icon">
+            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm.75 9.25a.75.75 0 01-1.5 0V8a.75.75 0 011.5 0v2.25zm-.75-5a.875.875 0 110 1.75.875.875 0 010-1.75z"/>
+          </svg>
+          <p>Sets are regenerated each time. Previous sets for this exam will be replaced. The exam will be immediately published after generation.</p>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="isLoading || !isFormValid">
+          <span *ngIf="isLoading" class="spinner"></span>
+          {{ isLoading ? 'Generating...' : 'Generate Sets' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

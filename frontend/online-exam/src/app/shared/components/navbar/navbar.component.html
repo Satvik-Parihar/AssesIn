@@ -1,0 +1,120 @@
+<nav class="oes-navbar">
+  <div class="oes-container nav-inner">
+
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2" [routerLink]="homeRoute">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="28" height="28" rx="8" fill="#1D4ED8"/>
+          <path d="M14 5L22 9.2V14.7C22 19.1 18.9 23 14 24.5C9.1 23 6 19.1 6 14.7V9.2L14 5Z" fill="#DBEAFE"/>
+          <path d="M10.2 14.2L12.7 16.7L17.8 11.6" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 5V24.5" stroke="#93C5FD" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+      <span class="brand-text">Online Examination System</span>
+    </a>
+
+    <!-- Desktop right nav -->
+    <div class="nav-right">
+      <ng-container *ngIf="auth.isLoggedIn; else guestNav">
+
+        <!-- Admin nav links -->
+        <ng-container *ngIf="auth.isAdmin">
+          <a routerLink="/admin/dashboard" routerLinkActive="nav-link-active" class="nav-link">Dashboard</a>
+          <a routerLink="/admin/create-exam" routerLinkActive="nav-link-active" class="nav-link">Create Exam</a>
+          <a routerLink="/admin/results" routerLinkActive="nav-link-active" class="nav-link">Results</a>
+          <a routerLink="/admin/manage-students" routerLinkActive="nav-link-active" class="nav-link">Students</a>
+        </ng-container>
+
+        <!-- Student nav links -->
+        <ng-container *ngIf="auth.isStudent">
+          <a routerLink="/student/dashboard" routerLinkActive="nav-link-active"
+             [routerLinkActiveOptions]="{exact: true}" class="nav-link">Dashboard</a>
+          <a routerLink="/student/dashboard" class="nav-link">My Exams</a>
+          <a routerLink="/student/results" routerLinkActive="nav-link-active" class="nav-link">Results</a>
+        </ng-container>
+
+        <!-- User avatar + dropdown -->
+        <div class="user-menu" [class.open]="dropdownOpen">
+          <button class="user-avatar-btn" (click)="toggleDropdown()" type="button">
+            <div class="user-avatar">{{ initials }}</div>
+            <span class="user-display-name">{{ auth.currentUser?.fullName }}</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <div class="nav-dropdown" *ngIf="dropdownOpen">
+            <div class="dropdown-header">
+              <p class="dropdown-name">{{ auth.currentUser?.fullName }}</p>
+              <p class="dropdown-role">{{ auth.currentUser?.role }}</p>
+              <p class="dropdown-role" *ngIf="auth.currentUser?.instituteName">{{ auth.currentUser?.instituteName }}</p>
+            </div>
+            <hr class="dropdown-divider" />
+            <button class="dropdown-item danger" type="button" (click)="logout()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <ng-template #guestNav>
+        <a routerLink="/login" routerLinkActive="nav-link-active" class="nav-link">Login</a>
+      </ng-template>
+    </div>
+
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger" [class.active]="menuOpen" (click)="toggleMenu()" type="button"
+            aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+  </div>
+
+  <!-- Mobile slide-down drawer -->
+  <div class="mobile-menu" [class.open]="menuOpen">
+    <ng-container *ngIf="auth.isLoggedIn; else guestMobileNav">
+
+      <ng-container *ngIf="auth.isAdmin">
+        <a routerLink="/admin/dashboard" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Dashboard</a>
+        <a routerLink="/admin/create-exam" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Create Exam</a>
+        <a routerLink="/admin/results" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Results</a>
+        <a routerLink="/admin/manage-students" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Students</a>
+      </ng-container>
+
+      <ng-container *ngIf="auth.isStudent">
+        <a routerLink="/student/dashboard" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Dashboard</a>
+        <a routerLink="/student/dashboard"
+           class="mobile-nav-link" (click)="menuOpen = false">My Exams</a>
+        <a routerLink="/student/results" routerLinkActive="nav-link-active"
+           class="mobile-nav-link" (click)="menuOpen = false">Results</a>
+      </ng-container>
+
+      <button class="mobile-nav-link mobile-logout" type="button" (click)="logout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+        </svg>
+        Logout
+      </button>
+
+    </ng-container>
+
+    <ng-template #guestMobileNav>
+      <a routerLink="/login" routerLinkActive="nav-link-active"
+         class="mobile-nav-link" (click)="menuOpen = false">Login</a>
+    </ng-template>
+  </div>
+
+</nav>

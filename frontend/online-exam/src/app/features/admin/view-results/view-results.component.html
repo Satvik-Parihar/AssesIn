@@ -1,0 +1,112 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Student Results</h1>
+        <p class="page-subtitle">View all exam attempts and inspect full question-wise results</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div *ngIf="isLoading" class="loading-state">Loading results...</div>
+      <div *ngIf="!isLoading && results.length === 0" class="empty-state">
+        No exam attempts yet.
+      </div>
+      <div *ngIf="!isLoading && results.length > 0" class="table-wrapper">
+        <table class="oes-table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Exam</th>
+              <th>Subject</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Incorrect</th>
+              <th>Grade</th>
+              <th>Submitted At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let r of results">
+              <tr>
+                <td>
+                  <div class="student-info">
+                    <p class="student-name">{{ r.studentName }}</p>
+                    <p class="student-email">{{ r.studentEmail }}</p>
+                    <p class="student-email">{{ r.studentInstitute }}</p>
+                  </div>
+                </td>
+                <td class="font-medium">{{ r.examTitle }}</td>
+                <td><span class="badge-subject">{{ r.subject }}</span></td>
+                <td>
+                  <span class="score-cell">{{ r.score }}/{{ r.totalMarks }}</span>
+                  <div class="score-bar">
+                    <div class="score-fill" [style.width.%]="r.percentage"></div>
+                  </div>
+                </td>
+                <td><span class="badge-correct">{{ r.correctCount }}</span></td>
+                <td><span class="badge-incorrect">{{ r.incorrectCount }}</span></td>
+                <td>
+                  <span class="grade-badge" [ngClass]="getGradeClass(r.percentage)">
+                    {{ getGrade(r.percentage) }} ({{ r.percentage }}%)
+                  </span>
+                </td>
+                <td class="date-cell">{{ r.submittedAt | date:'dd MMM yyyy, h:mm a' }}</td>
+                <td>
+                  <button class="action-link" type="button" (click)="toggleDetails(r.attemptId)">
+                    {{ expandedAttemptId === r.attemptId ? 'Hide Full Result' : 'View Full Result' }}
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="expandedAttemptId === r.attemptId">
+                <td colspan="9">
+                  <div *ngIf="detailLoading" class="loading-state">Loading full result...</div>
+                  <div *ngIf="detailError" class="alert-error">{{ detailError }}</div>
+
+                  <div *ngIf="detailMap[r.attemptId] as detail" class="card" style="margin: 8px 0;">
+                    <div class="card-header-row">
+                      <h3 class="card-title" style="font-size: 1rem; margin: 0;">Attempt #{{ detail.attemptId }} Details</h3>
+                      <span class="badge-count">{{ detail.correctCount }}/{{ detail.totalQuestions }} correct</span>
+                    </div>
+                    <p class="helper-text" style="margin-bottom: 12px;">
+                      Score {{ detail.score }}/{{ detail.totalMarks }} | Unanswered {{ detail.unansweredCount }} | Started {{ detail.startedAt | date:'dd MMM yyyy, h:mm a' }}
+                    </p>
+
+                    <div class="table-wrapper">
+                      <table class="oes-table">
+                        <thead>
+                          <tr>
+                            <th>Question</th>
+                            <th>Marks</th>
+                            <th>Selected</th>
+                            <th>Correct</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let a of detail.answers">
+                            <td class="font-medium">{{ a.questionText }}</td>
+                            <td>{{ a.marks }}</td>
+                            <td>{{ getOptionLabel(a.selectedOption) }}</td>
+                            <td>{{ a.correctOption }}</td>
+                            <td>
+                              <span class="exam-status-badge status-live" *ngIf="a.isCorrect">Correct</span>
+                              <span class="exam-status-badge status-ended" *ngIf="!a.isCorrect && a.selectedOption">Incorrect</span>
+                              <span class="exam-status-badge status-upcoming" *ngIf="!a.selectedOption">Unanswered</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

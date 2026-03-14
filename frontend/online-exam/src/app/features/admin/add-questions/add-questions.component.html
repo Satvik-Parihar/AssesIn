@@ -1,0 +1,127 @@
+<div class="page-wrapper">
+  <div class="oes-container">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Add Questions</h1>
+        <p class="page-subtitle">Add MCQ questions with four options to an exam</p>
+      </div>
+    </div>
+
+    <div class="two-column-layout">
+      <!-- Editor Panel -->
+      <div class="form-card">
+        <h2 class="card-section-title">Question Editor</h2>
+
+        <div *ngIf="successMessage" class="alert-success mb-16">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert-error mb-16">{{ errorMessage }}</div>
+
+        <div class="form-group">
+          <label class="form-label">Select Exam</label>
+          <select class="form-input" [(ngModel)]="selectedExamId" (change)="onExamChange(); onFieldChange()" (focus)="setActiveField('selectedExamId')" (blur)="clearActiveField('selectedExamId')" name="examSelect">
+            <option [value]="null" disabled>-- Choose an exam --</option>
+            <option *ngFor="let exam of exams" [value]="exam.id">{{ exam.title }} ({{ exam.subject }})</option>
+          </select>
+          <p *ngIf="activeField === 'selectedExamId' && examError" class="field-error">{{ examError }}</p>
+          <p *ngIf="exams.length === 0" class="field-hint">
+            No exams found. <a routerLink="/admin/create-exam" class="auth-link">Create an exam first →</a>
+          </p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-group">
+            <label class="form-label">Question Text</label>
+            <textarea class="form-input form-textarea" [(ngModel)]="questionText" name="questionText"
+              (ngModelChange)="onFieldChange()"
+              (focus)="setActiveField('questionText')"
+              (blur)="clearActiveField('questionText')"
+              placeholder="Enter the question..." rows="3" required></textarea>
+            <p *ngIf="activeField === 'questionText' && questionTextError" class="field-error">{{ questionTextError }}</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Options <span class="field-hint-inline">Click ✓ to mark as correct answer</span></label>
+            <div class="option-editor-row" [class.is-correct]="correctOption === 'A'">
+              <button type="button" class="option-check-btn" [class.active]="correctOption === 'A'" (click)="correctOption = 'A'; onFieldChange()" title="Mark A as correct">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="option-badge-editor opt-a">A</span>
+              <input type="text" class="form-input" [(ngModel)]="optionA" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionA')" (blur)="clearActiveField('optionA')" name="optionA" placeholder="Enter option A" required />
+            </div>
+            <p *ngIf="activeField === 'optionA' && optionAError" class="field-error">{{ optionAError }}</p>
+            <div class="option-editor-row" [class.is-correct]="correctOption === 'B'">
+              <button type="button" class="option-check-btn" [class.active]="correctOption === 'B'" (click)="correctOption = 'B'; onFieldChange()" title="Mark B as correct">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="option-badge-editor opt-b">B</span>
+              <input type="text" class="form-input" [(ngModel)]="optionB" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionB')" (blur)="clearActiveField('optionB')" name="optionB" placeholder="Enter option B" required />
+            </div>
+            <p *ngIf="activeField === 'optionB' && optionBError" class="field-error">{{ optionBError }}</p>
+            <div class="option-editor-row" [class.is-correct]="correctOption === 'C'">
+              <button type="button" class="option-check-btn" [class.active]="correctOption === 'C'" (click)="correctOption = 'C'; onFieldChange()" title="Mark C as correct">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="option-badge-editor opt-c">C</span>
+              <input type="text" class="form-input" [(ngModel)]="optionC" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionC')" (blur)="clearActiveField('optionC')" name="optionC" placeholder="Enter option C" required />
+            </div>
+            <p *ngIf="activeField === 'optionC' && optionCError" class="field-error">{{ optionCError }}</p>
+            <div class="option-editor-row" [class.is-correct]="correctOption === 'D'">
+              <button type="button" class="option-check-btn" [class.active]="correctOption === 'D'" (click)="correctOption = 'D'; onFieldChange()" title="Mark D as correct">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="option-badge-editor opt-d">D</span>
+              <input type="text" class="form-input" [(ngModel)]="optionD" (ngModelChange)="onFieldChange()" (focus)="setActiveField('optionD')" (blur)="clearActiveField('optionD')" name="optionD" placeholder="Enter option D" required />
+            </div>
+            <p *ngIf="activeField === 'optionD' && optionDError" class="field-error">{{ optionDError }}</p>
+            <p *ngIf="optionFieldsActive && optionsDistinctError" class="field-error">{{ optionsDistinctError }}</p>
+          </div>
+
+          <div class="form-group marks-group">
+            <label class="form-label">Marks for this question</label>
+            <input type="number" class="form-input marks-input" [(ngModel)]="marks" (ngModelChange)="onFieldChange()" (focus)="setActiveField('marks')" (blur)="clearActiveField('marks')" name="marks" min="1" />
+            <p *ngIf="activeField === 'marks' && marksError" class="field-error">{{ marksError }}</p>
+          </div>
+
+          <button type="submit" class="btn-submit" [disabled]="isLoading || !isFormValid">
+            <span *ngIf="isLoading" class="spinner"></span>
+            {{ isLoading ? 'Adding...' : '+ Add Question' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- Questions List -->
+      <div class="card">
+        <div class="card-header-row">
+          <h2 class="card-title">Questions ({{ questions.length }})</h2>
+        </div>
+        <div *ngIf="isLoadingQuestions" class="loading-state">Loading questions...</div>
+        <div *ngIf="!isLoadingQuestions && questions.length === 0" class="empty-state">
+          No questions added yet for this exam.
+        </div>
+        <div *ngIf="!isLoadingQuestions && questions.length > 0" class="question-list">
+          <div *ngFor="let q of questions; let i = index" class="question-item">
+            <div class="question-num">Q{{ i + 1 }}</div>
+            <div class="question-body">
+              <p class="question-text">{{ q.text }}</p>
+              <div class="options-preview">
+                <span [class.correct-option]="q.correctOption === 'A'"><strong>A.</strong> {{ q.optionA }}</span>
+                <span [class.correct-option]="q.correctOption === 'B'"><strong>B.</strong> {{ q.optionB }}</span>
+                <span [class.correct-option]="q.correctOption === 'C'"><strong>C.</strong> {{ q.optionC }}</span>
+                <span [class.correct-option]="q.correctOption === 'D'"><strong>D.</strong> {{ q.optionD }}</span>
+              </div>
+              <div class="question-meta">
+                <span class="correct-badge">Correct: {{ q.correctOption }}</span>
+                <span class="marks-badge">{{ q.marks }} mark(s)</span>
+              </div>
+            </div>
+            <button class="btn-delete" (click)="deleteQuestion(q.id)" title="Delete question">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
